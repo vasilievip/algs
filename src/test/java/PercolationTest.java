@@ -32,18 +32,42 @@ public class PercolationTest {
 
     @Test
     public void testIsFull() throws Exception {
-        Percolation p = new Percolation(2);
+        Percolation p = new Percolation(4);
         p.open(1,1);
+        p.open(4,4);
         Assert.assertTrue(p.isFull(1,1));
+        Assert.assertFalse(p.isFull(4,4));
         p.open(2,2);
+        Assert.assertFalse(p.isFull(4,4));
         p.open(2,1);
-        //PercolationVisualizer.draw(p,2);
-       //StdDraw.show(10000);
+        Assert.assertFalse(p.isOpen(1,2));
         Assert.assertTrue(p.isFull(2,2));
+        //PercolationVisualizer.draw(p, 4);
+        //StdDraw.show(10000);
     }
 
     @Test
-    public void testPercolates() throws Exception {
+    public void testPercolates2() throws Exception {
+        Percolation p = new Percolation(2);
+        p.open(1,1);
+        p.open(1,2);
+        Assert.assertFalse(p.percolates());
+        p.open(2,2);
+        Assert.assertTrue(p.percolates());
+    }
 
+    @Test
+    public void testPercolates4() throws Exception {
+        Percolation p = new Percolation(4);
+        p.open(1,1);
+        Assert.assertFalse(p.percolates());
+        Assert.assertFalse(p.isOpen(1,3));
+        Assert.assertFalse(p.isOpen(1,4));
+        p.open(1,2);
+        p.open(2,2);
+        Assert.assertFalse(p.percolates());
+
+        //PercolationVisualizer.draw(p, 4);
+       // StdDraw.show(10000);
     }
 }

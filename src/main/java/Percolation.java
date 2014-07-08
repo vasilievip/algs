@@ -1,5 +1,3 @@
-import java.util.Arrays;
-
 public class Percolation {
 
     private boolean[] sites;
@@ -19,49 +17,58 @@ public class Percolation {
 
 
     // open site (row i, column j) if it is not already
-    public void open(int i, int j) {
-        int index = (i-1) * size + j - 1;
-        this.sites[index] = true;
-        uf.union(i, j);
+    public void open(int row, int col) {
+        int j = (row-1) * size + col - 1;
+        this.sites[j] = true;
+        //uf.union(i, j);
         //Left right
-        if (isOpen(i - 1, j))
-            uf.union(index - 1, j-1);
-        if (isOpen(i + 1, j))
-            uf.union((i-1) * size, j-1);
+        if (isOpen(row - 1, col)) {
+            int i = (row-1 -1)*size + col - 1;
+            uf.union(i, j);
+        }
+
+        if (isOpen(row + 1, col)) {
+            int i = (row-1+1)*size + col - 1;
+            uf.union(i, j);
+        }
         //Top down
-        if (isOpen(i, j - 1))
-            uf.union((i-1) * size, j - 2);
-        if (isOpen(i, j + 1))
-            uf.union((i-1) * size, j);
+        if (isOpen(row, col - 1)) {
+            int i = (row-1)*size + col -1 - 1;
+            uf.union(i, j);
+        }
+
+        if (isOpen(row, col + 1)) {
+            int i = (row-1)*size + col +1 - 1;
+            uf.union(i, j);
+        }
     }
 
     // is site (row i, column j) open?
-    public boolean isOpen(int i, int j) {
-        if (i >= 1 && j >= 1 && (i * size + j-1) < size2)
-            return sites[(i-1) * size + j-1];
+    public boolean isOpen(int row, int col) {
+        int i = row - 1;
+        int j = i * size + col - 1;
+        if (j >= 0 && j < size2)
+            return sites[j];
         return false;
     }
 
     // is site (row i, column j) full?
-    public boolean isFull(int i, int j) {
+    public boolean isFull(int row, int col) {
+        if (!isOpen(row, col))
+            return false;
+        int i = row - 1;
+        int j = i * size + col - 1;
         for (int t = 0; t < size; t++)
-            if (uf.connected(t, (i-1) * size + j-1))
+            if (uf.connected(t, j))
                 return true;
         return false;
     }
 
     // does the system percolate?
     public boolean percolates() {
-
+        for (int t = 1; t <= size; t++)
+          if (isFull(size, t))
+                return true;
         return false;
-    }
-
-    @Override
-    public String toString() {
-        return "Percolation{"
-                + "sites=" + Arrays.toString(sites)
-                + ", size=" + size
-                + ", uf=" + uf
-                + '}';
     }
 }
