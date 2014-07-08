@@ -41,9 +41,9 @@ public class PercolationTest {
         Assert.assertFalse(p.isFull(4,4));
         p.open(2,1);
         Assert.assertFalse(p.isOpen(1,2));
+        PercolationVisualizer.draw(p, 4);
+        StdDraw.show(10000);
         Assert.assertTrue(p.isFull(2,2));
-        //PercolationVisualizer.draw(p, 4);
-        //StdDraw.show(10000);
     }
 
     @Test
