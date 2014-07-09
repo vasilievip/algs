@@ -20,7 +20,7 @@ public class Percolation {
         }
         perc = new WeightedQuickUnionUF(size2 + 2);
         full = new WeightedQuickUnionUF(size2 + 2);
-        topIndex =  size2;
+        topIndex = size2;
         bottomIndex = size2 + 1;
     }
 
@@ -49,37 +49,29 @@ public class Percolation {
         //Top down
         if (isValidRC(row - 1, col) && isOpen(row - 1, col)) {
             int i = getIndex(row - 1, col);
-            if (!perc.connected(i, j)) {
-                perc.union(i, j);
-                full.union(i, j);
-            }
+            perc.union(i, j);
+            full.union(i, j);
         }
         if (isValidRC(row + 1, col) && isOpen(row + 1, col)) {
             int i = getIndex(row + 1, col);
-            if (!perc.connected(i, j)) {
-                perc.union(i, j);
-                full.union(i, j);
-            }
+            perc.union(i, j);
+            full.union(i, j);
         }
         //Left right
         if (isValidRC(row, col - 1) && isOpen(row, col - 1)) {
             int i = getIndex(row, col - 1);
-            if (!perc.connected(i, j)) {
-                perc.union(i, j);
-                full.union(i, j);
-            }
+            perc.union(i, j);
+            full.union(i, j);
         }
         if (isValidRC(row, col + 1) && isOpen(row, col + 1)) {
             int i = getIndex(row, col + 1);
-            if (!perc.connected(i, j)) {
-                perc.union(i, j);
-                full.union(i, j);
-            }
+            perc.union(i, j);
+            full.union(i, j);
         }
     }
 
     private int getIndex(int row, int col) {
-        return (row - 1) * size + col-1;
+        return (row - 1) * size + col - 1;
     }
 
     // is site (row i, column j) open?

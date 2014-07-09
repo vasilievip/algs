@@ -60,6 +60,21 @@ public class PercolationTest {
     }
 
     @Test
+    public void testIsFull2() throws Exception {
+        Percolation p = new Percolation(4);
+        p.open(4, 1);
+        p.open(3, 1);
+        p.open(2, 1);
+        p.open(1, 1);
+        p.open(1, 4);
+        p.open(2, 4);
+        p.open(4, 4);
+        p.open(3, 4);
+//        PercolationVisualizer.draw(p, 4);
+//        StdDraw.show(10000);
+    }
+
+    @Test
     public void testPercolates2() throws Exception {
         Percolation p = new Percolation(2);
         p.open(1, 1);
