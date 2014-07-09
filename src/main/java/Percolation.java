@@ -3,8 +3,10 @@ public class Percolation {
     private boolean[] opensites;
     private int size;
     private int size2;
-    private WeightedQuickUnionUF uf;
-    private boolean percolates;
+    private WeightedQuickUnionUF perc;
+    private WeightedQuickUnionUF full;
+    private int topIndex;
+    private int bottomIndex;
 
     // create N-by-N grid, with all opensites blocked
     public Percolation(int N) {
@@ -12,11 +14,14 @@ public class Percolation {
             throw new IllegalArgumentException("?" + N);
         size = N;
         size2 = N * N;
-        opensites = new boolean[size2];
+        opensites = new boolean[size2 + 2];
         for (int i = 0; i < size2; i++) {
             opensites[i] = false;
         }
-        uf = new WeightedQuickUnionUF(size2);
+        perc = new WeightedQuickUnionUF(size2 + 2);
+        full = new WeightedQuickUnionUF(size2 + 2);
+        topIndex =  size2;
+        bottomIndex = size2 + 1;
     }
 
     private boolean isValidRC(int row, int col) {
@@ -31,39 +36,56 @@ public class Percolation {
     // open site (row i, column j) if it is not already
     public void open(int row, int col) {
         checkValidRowCol(row, col);
-        int j = (row - 1) * size + col - 1;
+        int j = getIndex(row, col);
         this.opensites[j] = true;
 
+        if (row == 1) {
+            perc.union(topIndex, j);
+            full.union(topIndex, j);
+        }
+        if (row == size) {
+            perc.union(bottomIndex, j);
+        }
         //Top down
         if (isValidRC(row - 1, col) && isOpen(row - 1, col)) {
-            int i = (row - 1 - 1) * size + col - 1;
-            if (!uf.connected(i, j))
-                uf.union(i, j);
+            int i = getIndex(row - 1, col);
+            if (!perc.connected(i, j)) {
+                perc.union(i, j);
+                full.union(i, j);
+            }
         }
-
         if (isValidRC(row + 1, col) && isOpen(row + 1, col)) {
-            int i = (row - 1 + 1) * size + col - 1;
-            if (!uf.connected(i, j))
-                uf.union(i, j);
+            int i = getIndex(row + 1, col);
+            if (!perc.connected(i, j)) {
+                perc.union(i, j);
+                full.union(i, j);
+            }
         }
         //Left right
         if (isValidRC(row, col - 1) && isOpen(row, col - 1)) {
-            int i = (row - 1) * size + col - 1 - 1;
-            if (!uf.connected(i, j))
-                uf.union(i, j);
+            int i = getIndex(row, col - 1);
+            if (!perc.connected(i, j)) {
+                perc.union(i, j);
+                full.union(i, j);
+            }
         }
         if (isValidRC(row, col + 1) && isOpen(row, col + 1)) {
-            int i = (row - 1) * size + col + 1 - 1;
-            if (!uf.connected(i, j))
-                uf.union(i, j);
+            int i = getIndex(row, col + 1);
+            if (!perc.connected(i, j)) {
+                perc.union(i, j);
+                full.union(i, j);
+            }
         }
+    }
 
+    private int getIndex(int row, int col) {
+        return (row - 1) * size + col-1;
     }
 
     // is site (row i, column j) open?
     public boolean isOpen(int row, int col) {
         checkValidRowCol(row, col);
-        int j = (row - 1) * size + col - 1;
+        int j = getIndex(row, col);
         return opensites[j];
 
     }
@@ -73,24 +95,12 @@ public class Percolation {
         checkValidRowCol(row, col);
         if (!isOpen(row, col))
             return false;
-        int j = (row - 1) * size + col - 1;
-        if (j >= 0 && j < size2) {
-            for (int t = 0; t < size; t++)
-                if (uf.connected(t, j))
-                    return true;
-        }
-        return false;
-
+        int j = getIndex(row, col);
+        return full.connected(topIndex, j);
     }
 
     // does the system percolate?
     public boolean percolates() {
-        for (int p = 1; p <= size; p++) {
-            if (isFull(size, p)) {
-                percolates = true;
-                break;
-            }
-        }
-        return percolates;
+        return perc.connected(topIndex, bottomIndex);
     }
 }

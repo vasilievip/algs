@@ -10,7 +10,6 @@ public class PercolationStats {
             throw new IllegalArgumentException("");
         double[] x = new double[T];
         for (int i = 0; i < T; i++) {
-            Stopwatch w = new Stopwatch();
             Percolation p = new Percolation(N);
             double openSites = 0;
             while (!p.percolates()) {
@@ -23,9 +22,10 @@ public class PercolationStats {
                         break;
                     }
                 }
+//                PercolationVisualizer.draw(p, N);
+//                StdDraw.show(100);
             }
             x[i] = openSites / (double) (N * N);
-            System.out.println(Thread.currentThread().getId()+":"+w.elapsedTime());
         }
         mean = StdStats.mean(x);
         stddev = StdStats.stddev(x);
