@@ -1,4 +1,7 @@
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.*;
 
 public class PercolationStats {
 
@@ -10,22 +13,39 @@ public class PercolationStats {
     // perform T independent computational experiments on an N-by-N grid
     public PercolationStats(int N, int T) {
         double[] x = new double[T];
+        int procs = Runtime.getRuntime().availableProcessors();
+        ExecutorService es = Executors.newFixedThreadPool(procs);
+
+        List<Future<Double>> results = new ArrayList();
         for (int i = 0; i < T; i++) {
-            Percolation p = new Percolation(N);
-            int openSites = 0;
-            while (!p.percolates()) {
-                int row = StdRandom.uniform(N)+1;
-                int col = StdRandom.uniform(N)+1;
-                if (!p.isOpen(row, col)) {
-                    p.open(row, col);
-                    openSites++;
-                }
-               // PercolationVisualizer.draw(p, N);
-               // StdDraw.show(100);
+            results.add((Future<Double>) es.submit((Runnable) new Task(i,N)));
+
+//            Percolation p = new Percolation(N);
+//            double openSites = 0;
+//            while (!p.percolates()) {
+//                int row = StdRandom.uniform(N)+1;
+//                int col = StdRandom.uniform(N)+1;
+//                if (!p.isOpen(row, col)) {
+//                    p.open(row, col);
+//                    openSites++;
+//                }
+////               PercolationVisualizer.draw(p, N);
+////               StdDraw.show(100);
+//            }
+////            System.out.println(openSites);
+////            PercolationVisualizer.draw(p, N);
+////            StdDraw.show(5000);
+//            x[i] = openSites /(double) (N * N) ;
+        }
+
+        for (int i = 0; i < T; i++) {
+            try {
+                x[i] = results.get(i).get();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
             }
-            //PercolationVisualizer.draw(p, N);
-            //StdDraw.show(10000);
-            x[i] = openSites / N * N;
         }
         System.out.println(Arrays.toString(x));
         mean = StdStats.mean(x);
@@ -72,5 +92,41 @@ public class PercolationStats {
         StdOut.print("95% confidence interval = ");
         StdOut.printf("%.17f %.17f\n", st.confidenceLo(), st.confidenceHi());
 
+    }
+
+    private class Task implements Callable<Double>, Runnable {
+        int i,N;
+        double res;
+        public Task(int i, int N) {
+            this.i = i;
+            this.N = N;
+
+        }
+
+        @Override
+        public Double call() throws Exception {
+            return res;
+        }
+
+        @Override
+        public void run() {
+            Percolation p = new Percolation(N);
+            double openSites = 0;
+            while (!p.percolates()) {
+                int row = StdRandom.uniform(N)+1;
+                int col = StdRandom.uniform(N)+1;
+                if (!p.isOpen(row, col)) {
+                    p.open(row, col);
+                    openSites++;
+                }
+//               PercolationVisualizer.draw(p, N);
+//               StdDraw.show(100);
+            }
+//            System.out.println(openSites);
+//            PercolationVisualizer.draw(p, N);
+//            StdDraw.show(5000);
+
+            res = openSites /(double) (N * N) ;
+        }
     }
 }
