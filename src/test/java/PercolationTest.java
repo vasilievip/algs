@@ -21,8 +21,8 @@ public class PercolationTest {
         p.open(1, 1);
         Assert.assertTrue(p.isOpen(1, 1));
         Assert.assertFalse(p.isOpen(1, 2));
-        Assert.assertFalse(p.isOpen(1, 0));
-        Assert.assertFalse(p.isOpen(1, 3));
+//        Assert.assertFalse(p.isOpen(1, 0));
+//        Assert.assertFalse(p.isOpen(1, 3));
         Assert.assertFalse(p.isOpen(2, 2));
         p.open(1, 2);
         Assert.assertTrue(p.isOpen(1, 2));
