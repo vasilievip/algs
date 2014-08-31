@@ -32,7 +32,6 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         items[tail] = item;
         tail++;
         resize();
-        //System.arraycopy();
     }
 
     // delete and return a random item
@@ -46,13 +45,21 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         if (tail >= 2 / 3 * capacity) {
             capacity = capacity * 2;
             Item[] items2 = (Item[]) new Object[capacity];
-            System.arraycopy(items, 0, items2, 0, tail);
+//            System.arraycopy(items, 0, items2, 0, tail);
+            for (int i = 0; i < tail; i++) {
+                items2[i] = items[i];
+                items[i] = null;
+            }
             items = items2;
         }
         if (tail <= 1 / 3 * capacity) {
             capacity = capacity / 2;
             Item[] items2 = (Item[]) new Object[capacity];
-            System.arraycopy(items, 0, items2, 0, tail);
+            for (int i = 0; i < tail; i++) {
+                items2[i] = items[i];
+                items[i] = null;
+            }
+//            System.arraycopy(items, 0, items2, 0, tail);
             items = items2;
         }
 
@@ -98,7 +105,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 
         @Override
         public boolean hasNext() {
-            return current < tail-1;
+            return current < tail - 1;
         }
 
         @Override
