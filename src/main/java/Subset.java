@@ -8,7 +8,7 @@ public class Subset {
             q.enqueue(s);
         }
         for (int i = 0; i < Integer.valueOf(args[0]); i++) {
-            System.out.println(q.sample());
+            System.out.println(q.dequeue());
         }
         //System.out.println(Arrays.toString(strs));
         //System.out.println(Arrays.toString(args));
