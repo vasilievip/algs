@@ -15,4 +15,16 @@ public class BruteTest {
     }
 
 
+    @Test
+    public void test9() throws Exception {
+        Brute.main(new String[]{BruteTest.class.getResource("input9.txt").getFile()});
+    }
+
+
+    @Test
+    public void testEquidistant() throws Exception {
+        Brute.main(new String[]{BruteTest.class.getResource("equidistant.txt").getFile()});
+    }
+
+
 }

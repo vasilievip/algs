@@ -25,16 +25,14 @@ public class Point implements Comparable<Point> {
      and degenerate line segments as in the slopeTo() method.
      */
     public final Comparator<Point> SLOPE_ORDER = new Comparator<Point>() {
-        private Point point0;
+
         @Override
         public int compare(Point o1, Point o2) {
-            if (point0 == null) point0 = Point.this;
-
             if (o1 == null || o2 == null)
                 throw new NullPointerException("Null");
 
-            double slopeTo1 = point0.slopeTo(o1);
-            double slopeTo2 = point0.slopeTo(o2);
+            double slopeTo1 = Point.this.slopeTo(o1);
+            double slopeTo2 = Point.this.slopeTo(o2);
             if (slopeTo1 < slopeTo2) {
                 return -1;
             }
@@ -60,6 +58,7 @@ public class Point implements Comparable<Point> {
     // plot this point to standard drawing
     public void draw() {
         /* DO NOT MODIFY */
+        //StdDraw.setPenRadius(0.05);
         StdDraw.point(x, y);
     }
 
@@ -122,27 +121,6 @@ public class Point implements Comparable<Point> {
         /* DO NOT MODIFY */
         return "(" + x + ", " + y + ")";
     }
-//
-//    @Override
-//    public boolean equals(Object o) {
-//        if (this == o) return true;
-//        if (!(o instanceof Point)) return false;
-//
-//        Point point = (Point) o;
-//
-//        if (x != point.x) return false;
-//        if (y != point.y) return false;
-//
-//        return true;
-//    }
-
-//    @Override
-//    public int hashCode() {
-//        int result = x;
-//        result = 31 * result + y;
-//        return result;
-//    }
-
 
     // unit test
     public static void main(String[] args) {
