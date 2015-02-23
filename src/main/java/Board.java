@@ -6,11 +6,13 @@ import java.util.Collections;
  */
 public class Board {
     private int[][] blocks;
+
     // construct a board from an N-by-N array of blocks
     // (where blocks[i][j] = block in row i, column j)
-    public Board(int[][] blocks)   {
+    public Board(int[][] blocks) {
         this.blocks = blocks;
     }
+
     // board dimension N
     public int dimension() {
         return blocks.length;
@@ -21,8 +23,8 @@ public class Board {
         int result = 0;
         for (int i = 1; i <= blocks.length; i++) {
             for (int j = 1; j <= blocks.length; j++) {
-                if ((i == j) && (i == blocks.length)) break;
-                if (blocks[i - 1][j - 1] != j + (i - 1) * blocks.length) {
+                if (getAt(i, j) == 0) continue;
+                if (getAt(i, j) != j + (i - 1) * blocks.length) {
                     result++;
                 }
             }
@@ -42,30 +44,32 @@ public class Board {
         int result = 0;
         for (int i = 1; i <= blocks.length; i++) {
             for (int j = 1; j <= blocks.length; j++) {
-                if ((i == j) && (i == blocks.length)) break;
-                if (blocks[i - 1][j - 1] != j + (i - 1) * blocks.length &&
-                        blocks[i - 1][j - 1] != 0) {
-                    int target [] = getTargetIndexes(blocks[i - 1][j - 1]);
-                    int toBeJ =  target[0];
-                    int toBeI =  target[1];
-                    result+= Math.abs(toBeI - i + toBeJ - j);
+                if (getAt(i, j) != 0) {
+                    int [] target = getTargetIndexes(getAt(i, j));
+                    int toBeI = target[0];
+                    int toBeJ = target[1];
+                    result += (Math.abs(toBeI - i) + Math.abs(toBeJ - j));
                 }
             }
         }
         return result;
     }
 
-    protected int [] getTargetIndexes(int number){
-        return new int [] {number - number % blocks.length +1, number / blocks.length + 1};
+    protected int getAt(int i, int j) {
+        return blocks[i - 1][j - 1];
+    }
+
+    protected int[] getTargetIndexes(int number) {
+        return new int[]{(number - 1) / blocks.length + 1,
+                (number - 1) % blocks.length + 1};
     }
 
     // is this board the goal board?
     public boolean isGoal() {
-        int result = 0;
         for (int i = 1; i <= blocks.length; i++) {
             for (int j = 1; j <= blocks.length; j++) {
                 if ((i == j) && (i == blocks.length)) break;
-                if (blocks[i - 1][j - 1] != j + (i - 1) * blocks.length) {
+                if (getAt(i, j) != j + (i - 1) * blocks.length) {
                     return false;
                 }
             }
@@ -74,8 +78,27 @@ public class Board {
     }
 
     // a board that is obtained by exchanging two adjacent blocks in the same row
-    public Board twin(){
+    public Board twin() {
+        int[][] newBlocks = getCopy();
+        for (int row = 1; row < blocks.length; row++) {
+            if (blocks[row][0] != 0 && blocks[row][1] != 0) {
+                int tmp = newBlocks[row][1];
+                newBlocks[row][1] = newBlocks[row][0];
+                newBlocks[row][1] = tmp;
+                break;
+            }
+        }
         return this;
+    }
+
+    private int[][] getCopy() {
+        int[][] newBlocks = new int[blocks.length][blocks.length];
+        for (int i = 0; i < blocks.length; i++) {
+            for (int j = 0; j < blocks.length; j++) {
+                newBlocks[i][j] = blocks[i][j];
+            }
+        }
+        return newBlocks;
     }
 
     // does this board equal y?
@@ -96,17 +119,20 @@ public class Board {
     @Override
     public String toString() {
         String result = "" + blocks.length;
-        for (int i = 0; i < blocks.length; i++) {
+        for (int i = 1; i <= blocks.length; i++) {
             result += System.getProperty("line.separator");
-            for (int j = 0; j < blocks.length; j++)
-                result += String.format(" %d ", blocks[i][j]);
+            for (int j = 1; j <= blocks.length; j++)
+                result += String.format(" %d ", getAt(i, j));
         }
         return result;
     }
 
     // all neighboring boards
-    public Iterable<Board> neighbors() {return Collections.EMPTY_LIST;}
+    public Iterable<Board> neighbors() {
+        return Collections.EMPTY_LIST;
+    }
 
     // unit tests (not graded)
-    public static void main(String[] args) {}
+    public static void main(String[] args) {
+    }
 }
