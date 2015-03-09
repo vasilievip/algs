@@ -1,5 +1,6 @@
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.List;
 
 /**
  * Created by vasilievip on 22.02.15.
@@ -10,7 +11,12 @@ public class Board {
     // construct a board from an N-by-N array of blocks
     // (where blocks[i][j] = block in row i, column j)
     public Board(int[][] blocks) {
-        this.blocks = blocks;
+        this.blocks = new int [blocks.length][blocks.length];
+        for (int i = 0; i < blocks.length; i++) {
+            for (int j = 0; j < blocks[i].length; j++) {
+                this.blocks[i][j] = blocks[i][j];
+            }
+        }
     }
 
     // board dimension N
@@ -55,11 +61,22 @@ public class Board {
         return result;
     }
 
-    protected int getAt(int i, int j) {
+    private int getAt(int i, int j) {
         return blocks[i - 1][j - 1];
     }
 
-    protected int[] getTargetIndexes(int number) {
+    private int [] getEmptyBlock() {
+        for (int i = 1; i <= blocks.length; i++) {
+            for (int j = 1; j <= blocks.length; j++) {
+                if (getAt(i, j) == 0) {
+                    return new int [] { i , j };
+                }
+            }
+        }
+        throw new IllegalStateException("No empty block found!");
+    }
+
+    private int[] getTargetIndexes(int number) {
         return new int[]{(number - 1) / blocks.length + 1,
                 (number - 1) % blocks.length + 1};
     }
@@ -79,16 +96,22 @@ public class Board {
 
     // a board that is obtained by exchanging two adjacent blocks in the same row
     public Board twin() {
+        int j1 = 1;
+        int j2 = 2;
         int[][] newBlocks = getCopy();
-        for (int row = 1; row < blocks.length; row++) {
-            if (blocks[row][0] != 0 && blocks[row][1] != 0) {
-                int tmp = newBlocks[row][1];
-                newBlocks[row][1] = newBlocks[row][0];
-                newBlocks[row][1] = tmp;
+        for (int row = 1; row <= blocks.length; row++) {
+            if (getAt(row, j1) != 0 && getAt(row, j2) != 0) {
+                exch(row, j1, row, j2, newBlocks);
                 break;
             }
         }
-        return this;
+        return new Board(newBlocks);
+    }
+
+    private void exch(int i, int j, int newi, int newj, int[][] array) {
+        int tmp = array[i - 1][j - 1];
+        array[i - 1][j - 1] = array[newi - 1][newj - 1];
+        array[newi - 1][newj - 1] = tmp;
     }
 
     private int[][] getCopy() {
@@ -129,7 +152,64 @@ public class Board {
 
     // all neighboring boards
     public Iterable<Board> neighbors() {
-        return Collections.EMPTY_LIST;
+        int [] emptyIJ = getEmptyBlock();
+        int emptyI = emptyIJ[0];
+        int emptyJ = emptyIJ[1];
+
+        Board top = moveTop(emptyI, emptyJ);
+        Board left = moveLeft(emptyI, emptyJ);
+        Board right = moveRight(emptyI, emptyJ);
+        Board down = moveDown(emptyI, emptyJ);
+        List<Board> result = new ArrayList<Board>();
+        if (top != null) {
+            result.add(top);
+        }
+        if (left != null) {
+            result.add(left);
+        }
+        if (right != null) {
+            result.add(right);
+        }
+        if (down != null) {
+            result.add(down);
+        }
+        return result;
+    }
+
+    private Board moveDown(int emptyI, int emptyJ) {
+        if (emptyI == blocks.length) {
+            return null;
+        }
+        int [][] newBlocks = getCopy();
+        exch(emptyI , emptyJ, emptyI + 1, emptyJ, newBlocks);
+        return new Board(newBlocks);
+    }
+
+    private Board moveRight(int emptyI, int emptyJ) {
+        if (emptyJ == blocks.length) {
+            return null;
+        }
+        int [][] newBlocks = getCopy();
+        exch(emptyI, emptyJ, emptyI, emptyJ + 1, newBlocks);
+        return new Board(newBlocks);
+    }
+
+    private Board moveLeft(int emptyI, int emptyJ) {
+        if (emptyJ == 1) {
+            return null;
+        }
+        int [][] newBlocks = getCopy();
+        exch(emptyI, emptyJ, emptyI, emptyJ - 1, newBlocks);
+        return new Board(newBlocks);
+    }
+
+    private Board moveTop(int emptyI, int emptyJ) {
+        if (emptyI == 1) {
+            return null;
+        }
+        int [][] newBlocks = getCopy();
+        exch(emptyI, emptyJ, emptyI - 1, emptyJ, newBlocks);
+        return new Board(newBlocks);
     }
 
     // unit tests (not graded)
